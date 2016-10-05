@@ -34,6 +34,6 @@
 #*******************************************************************************
 
 module OpenstudioServer
-  VERSION = '1.19.1'
-  VERSION_EXT = '-OS.1.13.0.fb588cc683' # with preceding - or +
+  VERSION = '1.20.0'
+  VERSION_EXT = '-necb-standards' # with preceding - or +
 end
