@@ -35,7 +35,7 @@ task :release do
   g.add_tag(OPENSTUDIO_SERVER_VERSION)
 
   # push the tags
-  g.push('origin', 'develop', true)
+  g.push('origin', 'OS-1.13.0-necb-standards', true)
 
   puts "\nSuccessfully create tag and pushed repo to server\n".green
 end
