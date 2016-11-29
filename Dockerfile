@@ -57,6 +57,8 @@ ENV RUBYGEMS_VERSION 2.6.6
 
 # some of ruby's build scripts are written in ruby
 # we purge this later to make sure our final image uses what we just built
+# we also specify a non-https rubygems source
+ADD /docker/server/.gemrc /root/.gemrc
 RUN curl -fSL -o ruby.tar.gz "http://cache.ruby-lang.org/pub/ruby/$RUBY_MAJOR/ruby-$RUBY_VERSION.tar.gz" \
 	&& echo "$RUBY_DOWNLOAD_SHA256 *ruby.tar.gz" | sha256sum -c - \
 	&& mkdir -p /usr/src/ruby \
@@ -104,7 +106,7 @@ ENV OPENSTUDIO_VERSION 1.13.2
 ENV OPENSTUDIO_SHA 6103d54380
 
 # Download from S3
-ENV OPENSTUDIO_DOWNLOAD_BASE_URL https://s3.amazonaws.com/openstudio-builds/$OPENSTUDIO_VERSION
+ENV OPENSTUDIO_DOWNLOAD_BASE_URL http://s3.amazonaws.com/openstudio-builds/$OPENSTUDIO_VERSION
 ENV OPENSTUDIO_DOWNLOAD_FILENAME OpenStudio-$OPENSTUDIO_VERSION.$OPENSTUDIO_SHA-Linux.deb
 ENV OPENSTUDIO_DOWNLOAD_URL $OPENSTUDIO_DOWNLOAD_BASE_URL/$OPENSTUDIO_DOWNLOAD_FILENAME
 
