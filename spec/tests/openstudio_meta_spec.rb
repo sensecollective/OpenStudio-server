@@ -47,7 +47,7 @@ require 'json'
 
 # mongod must be in the path, if you are on Windows you can use the following
 if /mingw/.match(RUBY_PLATFORM) || /win/.match(RUBY_PLATFORM)
-  ENV['PATH'] = "C:/Program Files/MongoDB/Server/3.0/bin;#{ENV['PATH']}"
+  ENV['PATH'] = "C:/Program Files/MongoDB/Server/3.0/bin;#{ENV['PATH']}" #@todo it would be good to un-hard-code this
 end
 
 def which(cmd)
@@ -79,7 +79,7 @@ num_workers = 2
 
 # the actual tests
 RSpec.describe OpenStudioMeta do
-  before :each do
+  before :all do
     # start the server
     command = "#{ruby_cmd} \"#{meta_cli}\" start_local --mongo-dir=\"#{File.dirname(mongod_exe)}\" --worker-number=#{num_workers} --debug --verbose \"#{project}\""
     puts command
@@ -87,7 +87,7 @@ RSpec.describe OpenStudioMeta do
     expect(start_local).to be true
   end
 
-  it 'run analysis' do
+  it 'run simple analysis' do
     # run an analysis
     command = "#{ruby_cmd} \"#{meta_cli}\" run_analysis --debug --verbose \"#{project}/example_csv.json\" http://localhost:8080/ -a batch_datapoints"
     puts command
@@ -104,7 +104,7 @@ RSpec.describe OpenStudioMeta do
 
     status = 'queued'
     begin
-      ::Timeout.timeout(90) do
+      ::Timeout.timeout(120) do
         while status != 'completed'
           # get the analysis pages
           a = RestClient.get "http://localhost:8080/analyses/#{analysis_id}.json"
@@ -146,7 +146,66 @@ RSpec.describe OpenStudioMeta do
     expect(status).to eq('completed')
   end
 
-  after :each do
+  it 'run a complicated design alternative set' do
+    # run an analysis
+    command = "#{ruby_cmd} \"#{meta_cli}\" run_analysis --debug --verbose \"#{project}/da_measures.json\" http://localhost:8080/ -a batch_datapoints"
+    puts command
+    run_analysis = system(command)
+    expect(run_analysis).to be true
+
+    a = RestClient.get 'http://localhost:8080/analyses.json'
+    a = JSON.parse(a, symbolize_names: true)
+    a = a.sort { |x, y| x[:created_at] <=> y[:created_at] }.reverse
+    expect(a).not_to be_empty
+
+    analysis = a[0]
+    analysis_id = analysis[:_id]
+
+    status = 'queued'
+    begin
+      ::Timeout.timeout(120) do
+        while status != 'completed'
+          # get the analysis pages
+          a = RestClient.get "http://localhost:8080/analyses/#{analysis_id}.json"
+          a = RestClient.get "http://localhost:8080/analyses/#{analysis_id}.html"
+          a = RestClient.get "http://localhost:8080/analyses/#{analysis_id}/status.json"
+          a = JSON.parse(a, symbolize_names: true)
+          status = a[:analysis][:status]
+          expect(status).not_to be_nil
+          puts "Accessed pages for analysis #{analysis_id}, status = #{status}"
+
+          # get all data points in this analysis
+          a = RestClient.get 'http://localhost:8080/data_points.json'
+          a = JSON.parse(a, symbolize_names: true)
+          data_points = []
+          a.each do |data_point|
+            if data_point[:analysis_id] == analysis_id
+              data_points << data_point
+            end
+          end
+
+          data_points.each do |data_point|
+            # get the datapoint pages
+            data_point_id = data_point[:_id]
+            a = RestClient.get "http://localhost:8080/data_points/#{data_point_id}.html"
+            a = RestClient.get "http://localhost:8080/data_points/#{data_point_id}.json"
+            a = JSON.parse(a, symbolize_names: true)
+            status = a[:data_point][:status]
+            expect(status).not_to be_nil
+            puts "Accessed pages for data_point #{data_point_id}, status = #{status}"
+          end
+          puts ''
+          sleep 1
+        end
+      end
+    rescue ::Timeout::Error
+      puts "Analysis status is `#{status}` after 90 seconds; assuming error."
+    end
+
+    expect(status).to eq('completed')
+  end
+
+  after :all do
     # stop the server
     command = "#{ruby_cmd} \"#{meta_cli}\" stop_local \"#{project}\""
     puts command

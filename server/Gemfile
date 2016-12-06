@@ -27,11 +27,6 @@ gem 'net-scp'
 gem 'net-ssh'
 gem 'net-sftp'
 
-# javascript
-# gem 'libv8', platforms: :ruby
-gem 'execjs'
-gem 'therubyracer', platforms: :ruby
-
 # other useful gems
 gem 'parallel'
 gem 'sys-filesystem'
@@ -60,27 +55,32 @@ gem 'sprockets-rails'
 
 # For workers - and other dependencies for measures
 ## Commonly update gems for testing and development
-gem 'openstudio-workflow', github: 'NREL/OpenStudio-workflow-gem', branch: 'osw'
+gem 'openstudio-workflow', :github => 'NREL/OpenStudio-workflow-gem', :ref => 'a5101a2879b341fecf0a5887f024caada8cb16b6'
+# gem 'openstudio-workflow', github: 'NREL/OpenStudio-workflow-gem', branch: 'osw'
 # gem 'openstudio-workflow', path: '../../OpenStudio-workflow-gem'
 
-gem 'openstudio-analysis', '1.0.0.rc11'
-# gem 'openstudio-analysis', github: 'NREL/openstudio-analysis-gem', branch: 'develop'
+gem 'openstudio-analysis', '1.0.0.rc13'
+# gem 'openstudio-analysis', github: 'NREL/openstudio-analysis-gem', branch: 'multi-seed-support'
 # gem 'openstudio-analysis', path: '../../openstudio-analysis-gem'
 ## End commonly updated gems
-gem 'openstudio-standards', '0.1.4'
+
+gem 'openstudio-standards', '0.1.9'
 gem 'openstudio-aws', '~> 0.4'
 
 gem 'msgpack', '~> 1.0'
 gem 'multi_json'
-gem 'oj'
+gem 'oj', '=2.17.5' # Next release (2.18.0) doesn't install on Windows
 gem 'rest-client'
-gem 'libxml-ruby', platforms: :ruby
+gem 'libxml-ruby'
 gem 'os'
 
 gem 'rubocop'
 
-if RUBY_PLATFORM =~ /win/ || RUBY_PLATFORM =~ /mingw/
-  gem 'tzinfo-data'
+# Docker required js runtime
+group :docker do
+  gem 'execjs'
+  gem 'libv8'
+  gem 'therubyracer', :platforms => :ruby
 end
 
 group :development, :test do
@@ -96,7 +96,6 @@ group :development, :test do
   gem 'rspec-retry'
   gem 'rspec-rails'
 
-  gem 'rubocop', require: false
   gem 'rubocop-checkstyle_formatter', require: false
 
   gem 'mongoid-rspec'

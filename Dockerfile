@@ -12,6 +12,7 @@ ARG bundle_args="--without development test"
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		autoconf \
+		apt-transport-https \
 		bison \
 	    build-essential \
 		bzip2 \
@@ -145,7 +146,7 @@ RUN if [ "$RAILS_ENV" = "docker-test" ]; then \
             firefox && \
         rm -rf /var/lib/apt/lists/* && \
         cd /usr/local/bin && \
-        wget https://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz && \
+        wget http://github.com/mozilla/geckodriver/releases/download/$GECKODRIVER_VERSION/geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz && \
         tar -xvzf geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz && \
         rm geckodriver-$GECKODRIVER_VERSION-linux64.tar.gz && \
         chmod +x geckodriver; \
@@ -169,7 +170,7 @@ ADD /server/lib /opt/openstudio/server/lib
 
 # Now call precompile
 RUN mkdir /opt/openstudio/server/log
-RUN rake assets:precompile
+RUN bundle exec rake assets:precompile
 
 # Bundle app source
 ADD /server /opt/openstudio/server
