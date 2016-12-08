@@ -66,7 +66,7 @@ class OpenStudioMeta
 end
 
 mongod_exe = which('mongod')
-ruby_cmd = "\"#{RbConfig.ruby}\"" # full path if you care
+# ruby_cmd = "\"#{RbConfig.ruby}\"" # full path if you care
 ruby_cmd = 'ruby'
 meta_cli = File.absolute_path(File.join(File.dirname(__FILE__), '../../bin/openstudio_meta'))
 project = File.absolute_path(File.join(File.dirname(__FILE__), '../files/'))
@@ -81,9 +81,16 @@ num_workers = 2
 RSpec.describe OpenStudioMeta do
   before :all do
     # start the server
+    iterations = 0
+    start_local = false
     command = "#{ruby_cmd} \"#{meta_cli}\" start_local --mongo-dir=\"#{File.dirname(mongod_exe)}\" --worker-number=#{num_workers} --debug --verbose \"#{project}\""
-    puts command
-    start_local = system(command)
+    puts "Command to start the server will be: `#{command}`"
+    while iterations < 4
+      start_local = system(command)
+      break if start_local
+      puts "Server failed to start on iteration #{iterations}"
+      iterations += 1
+    end
     expect(start_local).to be true
   end
 

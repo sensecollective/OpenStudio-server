@@ -75,7 +75,9 @@ bundle_path = File.absolute_path(File.join(__FILE__, './../../../../gems/bin/bun
 ::ENV['RAILS_ENV'] = 'local'
 sys_call = "\"#{ruby_exe}\" \"#{bundle_path}\" exec \"#{ruby_exe}\" bin/delayed_job -i server"\
   " --queue=analyses,background run --log-dir=\"#{log_dir}\" --pid-dir=\"#{project_dir}\""
-puts "ENV for starting rails: #{::ENV.inspect}" if options[:debug]
+puts_env = ::ENV.select {|key| key.include?('GEM') || key.include?('BUNDLE') || key.include?('RUBY') || key.include?('OPENSTUDIO') || key.include?('OS') }
+puts_env = puts_env.select {|key| !key.include?('KEY') && !key.include?('TOKEN') && !key.include?('AUTH') && !key.include?('ID') && !key.include?('AWS') && !key.include?('S3') }
+puts "Partial ENV for starting dj_server: #{puts_env}" if options[:debug]
 puts "System call will be: '#{sys_call}' in directory '#{Dir.pwd}'" if options[:debug]
 
 # Execute the system call

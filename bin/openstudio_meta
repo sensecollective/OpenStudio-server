@@ -329,7 +329,6 @@ class InstallGems
     sys_cmds << "#{$ruby_path} #{bundler_bin} update"
     sys_cmds << "#{$ruby_path} #{rake_bin} assets:precompile" # DLM: consider deleting /server/public/assets each time
     sys_call = sys_cmds.join(' && ')
-    puts "Enviroment variables: #{::ENV.inspect}" if options[:debug]
     puts "System call will be: '#{sys_call}' in directory '#{Dir.pwd}'" if options[:debug]
     unless system(sys_call)
       $logger.error "System call '#{sys_call}' failed"
@@ -808,7 +807,9 @@ if $argv.include? '--verbose'
   $logger.level = ::Logger::DEBUG
   $argv.delete '--verbose'
   $logger.debug 'Set Logger log level to DEBUG'
-  $logger.debug "Environment is: #{::ENV.inspect}"
+  puts_env = ::ENV.select {|key| key.include?('GEM') || key.include?('BUNDLE') || key.include?('RUBY') || key.include?('OPENSTUDIO') || key.include?('OS') }
+  puts_env = puts_env.select {|key| !key.include?('KEY') && !key.include?('TOKEN') && !key.include?('AUTH') && !key.include?('ID') && !key.include?('AWS') && !key.include?('S3') }
+  $logger.debug "Partial ENV is: #{puts_env}"
 end
 $logger.debug "Input ARGV is #{$argv}"
 
