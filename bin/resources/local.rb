@@ -214,7 +214,7 @@ def start_local_server(project_directory, mongo_directory, ruby_path, worker_num
   end
 
   begin
-    ::Timeout.timeout(20) do
+    ::Timeout.timeout(60) do
       success = system mongod_command
       unless success
         $logger.error "Mongod returned non-zero status code  `#{$?.exitstatus}`. Please refer to "\
