@@ -6,7 +6,7 @@ $iteration = 0
     Write-Host "Attempting to run rspec test; attempt $iteration"
     $tests = Start-Process -PassThru -WorkingDirectory "C:\projects\openstudio-server" -FilePath "bundle" -ArgumentList "exec rspec" -RedirectStandardOutput "C:\projects\openstudio-server\spec\files\logs\win-stdout.log" -RedirectStandardError "C:\projects\openstudio-server\spec\files\logs\win-stderr.log"
     $handle = $tests.Handle # See http://stackoverflow.com/a/23797762/1479211
-    $timeout = new-timespan -Minutes 7
+    $timeout = new-timespan -Minutes 10
     $sw = [diagnostics.stopwatch]::StartNew()
     While ($sw.elapsed -lt $timeout)
         {
@@ -26,7 +26,7 @@ $iteration = 0
         }
         start-sleep -seconds 1
     }
-    Write-Host "Process has not completed after 300 seconds. Invoking timeout"
+    Write-Host "Process has not completed after 600 seconds. Invoking timeout"
     taskkill /T /F /PID $tests.ID
     Exit 1
 }
