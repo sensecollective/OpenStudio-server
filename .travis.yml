@@ -27,11 +27,28 @@ matrix:
     - REDHAT_BUILD: false
     - OSX_BUILD: true
     - USE_TESTING_TIMEOUTS: "true"
-    - OPENSTUDIO_VERSION:
-      - "ONE_ITERATION"
-      - "ONE_RELEASE"
-      - "TWO_ITERATION"
-      - "TWO_RELEASE"
+    - OPENSTUDIO_VERSION: "ONE_ITERATION"
+  - os: osx
+    osx_image: xcode7.3
+    env:
+    - REDHAT_BUILD: false
+    - OSX_BUILD: true
+    - USE_TESTING_TIMEOUTS: "true"
+    - OPENSTUDIO_VERSION: "ONE_RELEASE"
+  - os: osx
+    osx_image: xcode7.3
+    env:
+    - REDHAT_BUILD: false
+    - OSX_BUILD: true
+    - USE_TESTING_TIMEOUTS: "true"
+    - OPENSTUDIO_VERSION:  "TWO_ITERATION"
+  - os: osx
+    osx_image: xcode7.3
+    env:
+    - REDHAT_BUILD: false
+    - OSX_BUILD: true
+    - USE_TESTING_TIMEOUTS: "true"
+    - OPENSTUDIO_VERSION:  "TWO_RELEASE"
 before_install: ./ci/travis/setup.sh
 script: ./ci/travis/test.sh
 after_failure: ./ci/travis/print_logs.sh

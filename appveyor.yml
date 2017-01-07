@@ -4,11 +4,16 @@ environment:
   USE_TESTING_TIMEOUTS: "true"
   matrix:
     - RUBY_VERSION: "200-x64"
-    - OPENSTUDIO_VERSION:
-      - "ONE_RELEASE"
-      - "ONE_ITERATION"
-      - "TWO_RELEASE"
-      - "TWO_ITERATION"
+      OPENSTUDIO_VERSION: "ONE_RELEASE"
+
+    - RUBY_VERSION: "200-x64"
+      OPENSTUDIO_VERSION: "ONE_ITERATION"
+
+    - RUBY_VERSION: "200-x64"
+      OPENSTUDIO_VERSION: "TWO_RELEASE"
+
+    - RUBY_VERSION: "200-x64"
+      OPENSTUDIO_VERSION: "TWO_ITERATION"
 
 clone_folder: C:\projects\openstudio-server
 
