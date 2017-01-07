@@ -5,9 +5,32 @@ if [ "${REDHAT_BUILD}" = 'false' ]; then
 		echo 'IN AN OSX BUILD'
 		brew install mongo
 		unset BUNDLE_GEMFILE
-		curl -SLO https://openstudio-resources.s3.amazonaws.com/pat-dependencies/OpenStudio2-1.13.0.fb588cc683-darwin.zip
+		ruby gem update --system
+		gem install bundler
+		bundle install
+		ruby bundle exec ./ci/build_os_release_scripts.rb
+		. ./ci/exports.sh
 		mkdir ~/openstudio
-		unzip OpenStudio2-1.13.0.fb588cc683-darwin.zip -d ~/openstudio
+		if [ "${OPENSTUDIO_VERSION}" = 'ONE_ITERATION' ]; then
+		    curl -SLO https://s3.amazonaws.com/openstudio-builds/${OPENSTUDIO_ONE_ITERATION}-Darwin.dmg
+		    unzip ${OPENSTUDIO_ONE_ITERATION}-Darwin.dmg -d ~/openstudio
+		    rm -rf ${OPENSTUDIO_ONE_ITERATION}-Darwin.dmg
+		fi
+		if [ "${OPENSTUDIO_VERSION}" = 'TWO_ITERATION' ]; then
+		    curl -SLO https://s3.amazonaws.com/openstudio-builds/${OPENSTUDIO_TWO_ITERATION}-Darwin.dmg
+		    unzip ${OPENSTUDIO_TWO_ITERATION}-Darwin.dmg -d ~/openstudio
+		    rm -rf ${OPENSTUDIO_TWO_ITERATION}-Darwin.dmg
+		fi
+		if [ "${OPENSTUDIO_VERSION}" = 'ONE_RELEASE' ]; then
+		    curl -SLO https://s3.amazonaws.com/openstudio-builds//${OPENSTUDIO_ONE_RELEASE}-Darwin.dmg
+		    unzip ${OPENSTUDIO_ONE_RELEASE}-Darwin.dmg -d ~/openstudio
+		    rm -rf ${OPENSTUDIO_ONE_RELEASE}-Darwin.dmg
+		fi
+		if [ "${OPENSTUDIO_VERSION}" = 'TWO_RELEASE' ]; then
+		    curl -SLO https://s3.amazonaws.com/openstudio-builds/${OPENSTUDIO_TWO_RELEASE}-Darwin.dmg
+		    unzip ${OPENSTUDIO_TWO_RELEASE}-Darwin.dmg -d ~/openstudio
+		    rm -rf ${OPENSTUDIO_TWO_RELEASE}-Darwin.dmg
+		fi
 		export RUBYLIB="${HOME}/openstudio/Ruby/:$RUBYLIB"
 		ruby ./bin/openstudio_meta install_gems --with_test_develop --debug --verbose
 	fi
