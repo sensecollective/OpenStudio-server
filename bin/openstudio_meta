@@ -454,8 +454,8 @@ class StartLocal
         options[:energyplus_exe_path] = path
       end
 
-	  o.on('--osray-path PATH', 'Location of Radiance') do |path|
-        options[:osray_path] = path
+	  o.on('--os-raypath PATH', 'Location of Radiance') do |path|
+        options[:os_raypath] = path
       end
     end
 
@@ -493,8 +493,8 @@ class StartLocal
       ::ENV['ENERGYPLUS_EXE_PATH'] = options[:energyplus_exe_path]
     end
 
-    if options[:osray_path] && ::File.exist?(options[:osray_path])
-      ::ENV['OSRAY_PATH'] = options[:osray_path]
+    if options[:os_raypath] && ::File.exist?(options[:os_raypath])
+      ::ENV['OS_RAYPATH'] = options[:os_raypath]
     end
 
     # Set the server project path and temp dir
